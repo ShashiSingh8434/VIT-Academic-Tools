@@ -1,0 +1,34 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Slot picker</title>
+<style>
+:root{box-sizing:border-box;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);--bg:#f7f8fa;--fg:#17202e;--mut:#5b6678;--bd:#9fb3cc;--hd:#cfd2ff;--day:#e2e2e2;--cell:#ffffd5;--g:#c6ff2e;--gt:#17202e;--lu:#e2e2e2}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10151d;--fg:#e6ebf3;--mut:#9aa6b8;--bd:#3a4a63;--hd:#2b3260;--day:#202b3d;--cell:#2a2a1c;--g:#4c9a1f;--gt:#fff;--lu:#202b3d}}
+:root[data-theme="dark"]{--bg:#10151d;--fg:#e6ebf3;--mut:#9aa6b8;--bd:#3a4a63;--hd:#2b3260;--day:#202b3d;--cell:#2a2a1c;--g:#4c9a1f;--gt:#fff;--lu:#202b3d}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:0 0 4px}p{color:var(--mut);margin:0 0 12px}
+.w{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:760px}
+th,td{border:1px solid var(--bd);padding:0;text-align:center}
+th{background:var(--hd);padding:6px;font-size:13px}th small{display:block;font-weight:400;color:var(--mut)}
+th.d{background:var(--day);width:60px}td.lu{background:var(--lu);color:var(--mut);font-size:13px;width:54px}
+td.s{background:var(--cell);height:54px;cursor:pointer;font-weight:600;user-select:none;-webkit-user-select:none}
+td.s.on{background:var(--g);color:var(--gt)}
+td.s:hover{outline:2px solid var(--bd);outline-offset:-2px}
+.bar{display:flex;gap:10px;align-items:center;margin:12px 0;flex-wrap:wrap}
+button{font:inherit;padding:7px 14px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--fg);cursor:pointer}
+#sel{color:var(--mut);font-size:14px}
+</style></head><body><main>
+<h1>Slot picker</h1><p>Tap any box to turn it green. Tap again to undo.</p>
+<div class="w"><table id="t"></table></div>
+<div class="bar"><button id="r">Clear all</button><span id="sel"></span></div>
+</main><script>
+const T=[['08:30','10:00'],['10:05','11:35'],['11:40','13:10'],['13:15','14:45'],['14:50','16:20'],['16:25','17:55'],['18:00','19:30']];
+const G={MON:'A11 B11 C11 A21 A14 B21 C21',TUE:'D11 E11 F11 D21 E14 E21 F21',WED:'A12 B12 C12 A22 B14 B22 A24',THU:'D12 E12 F12 D22 F14 E22 F22',FRI:'A13 B13 C13 A23 C14 B23 B24',SAT:'D13 E13 F13 D23 D14 D24 E23'};
+const t=document.getElementById('t'),sel=document.getElementById('sel');
+let h='<tr><th class="d">Day</th>';
+T.forEach((x,i)=>{if(i==3)h+='<th>Lunch</th>';h+='<th>'+x[0]+'<small>'+x[1]+'</small></th>'});h+='</tr>';
+for(const d in G){h+='<tr><th class="d">'+d+'</th>';G[d].split(' ').forEach((s,i)=>{if(i==3)h+='<td class="lu">Lunch</td>';h+='<td class="s" data-s="'+s+'">'+s+'</td>'});h+='</tr>'}
+t.innerHTML=h;
+function upd(){const n=[...document.querySelectorAll('td.on')].length;sel.textContent=n?n+' slot'+(n>1?'s':'')+' selected':''}
+t.onclick=e=>{const c=e.target.closest('td.s');if(c){c.classList.toggle('on');upd()}};
+document.getElementById('r').onclick=()=>{document.querySelectorAll('td.on').forEach(c=>c.classList.remove('on'));upd()};
+</script></body></html>

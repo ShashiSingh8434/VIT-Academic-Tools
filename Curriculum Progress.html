@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shashi Singh — Degree Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1E2430;
+    --ink-soft:#4B5163;
+    --muted:#807A6C;
+    --paper:#EAE6DC;
+    --panel:#F6F4ED;
+    --panel-raised:#FFFFFF;
+    --line:#D6D0C1;
+    --line-soft:#E4E0D3;
+    --brass:#8F6C33;
+    --brass-fill:#B4903F;
+    --forest:#3E6650;
+    --forest-bg:#E4EBE2;
+    --rust:#A5502C;
+    --rust-bg:#F1E3D6;
+    --slate:#6A7285;
+    --slate-bg:#E7E7E0;
+    --radius:3px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    font-feature-settings:"tnum" 1, "lnum" 1;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+
+  .wrap{
+    max-width:920px;
+    margin:0 auto;
+    padding:0 24px 96px;
+  }
+
+  /* ---------- Header / Hero ---------- */
+  .masthead{
+    padding:56px 0 36px;
+    border-bottom:1px solid var(--line);
+  }
+  .masthead-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:24px;
+    flex-wrap:wrap;
+  }
+  .student-name{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:2.6rem;
+    line-height:1.05;
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+  }
+  .student-meta{
+    color:var(--muted);
+    font-size:0.95rem;
+    margin:0;
+  }
+  .student-meta span{margin-right:2px;}
+  .dot{color:var(--line); margin:0 8px;}
+
+  .cgpa-box{
+    text-align:right;
+    flex-shrink:0;
+  }
+  .cgpa-num{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:2.2rem;
+    color:var(--brass);
+    line-height:1;
+  }
+  .cgpa-label{
+    font-size:0.78rem;
+    color:var(--muted);
+    margin-top:4px;
+  }
+
+  .progress-hero{
+    margin-top:40px;
+    display:flex;
+    align-items:baseline;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+  .progress-fraction{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:4.4rem;
+    line-height:1;
+    letter-spacing:-0.02em;
+  }
+  .progress-fraction small{
+    font-size:1.8rem;
+    color:var(--muted);
+    font-weight:400;
+  }
+  .progress-caption{
+    color:var(--ink-soft);
+    font-size:1rem;
+    max-width:280px;
+    padding-bottom:6px;
+  }
+  .progress-caption strong{color:var(--ink); font-weight:600;}
+
+  .bar-track{
+    margin-top:20px;
+    height:10px;
+    width:100%;
+    background:var(--slate-bg);
+    border-radius:2px;
+    overflow:hidden;
+    display:flex;
+  }
+  .bar-earned{background:var(--brass-fill); height:100%;}
+  .bar-current{background:var(--rust); height:100%; opacity:0.55;}
+  .bar-legend{
+    display:flex;
+    gap:22px;
+    margin-top:10px;
+    font-size:0.8rem;
+    color:var(--muted);
+  }
+  .bar-legend span{display:inline-flex; align-items:center; gap:6px;}
+  .swatch{width:9px; height:9px; border-radius:2px; display:inline-block;}
+
+  /* ---------- Section headings ---------- */
+  .section{
+    margin-top:56px;
+  }
+  .section-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:20px;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .section-title{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:1.5rem;
+    margin:0;
+  }
+  .section-sub{
+    color:var(--muted);
+    font-size:0.88rem;
+    margin:0;
+  }
+
+  /* ---------- Current semester ---------- */
+  .term-table{
+    border-top:1px solid var(--ink);
+  }
+  .term-row{
+    display:grid;
+    grid-template-columns:88px 1fr auto auto;
+    gap:16px;
+    align-items:center;
+    padding:13px 0;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .term-row-head{
+    display:grid;
+    grid-template-columns:88px 1fr auto auto;
+    gap:16px;
+    padding:8px 0;
+    font-size:0.72rem;
+    color:var(--muted);
+    text-transform:none;
+  }
+  .code{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.82rem;
+    color:var(--ink-soft);
+  }
+  .course-title{font-size:0.95rem;}
+  .course-cat{
+    font-size:0.78rem;
+    color:var(--muted);
+    justify-self:end;
+    text-align:right;
+    max-width:180px;
+  }
+  .course-credits{
+    font-variant-numeric:tabular-nums;
+    font-size:0.9rem;
+    color:var(--ink-soft);
+    justify-self:end;
+    width:32px;
+    text-align:right;
+  }
+  .term-total{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    padding-top:14px;
+    font-size:0.9rem;
+    color:var(--ink-soft);
+  }
+  .term-total strong{color:var(--ink);}
+
+  /* ---------- Requirement ledger ---------- */
+  .req-list{border-top:1px solid var(--ink);}
+  .req-row{
+    border-bottom:1px solid var(--line-soft);
+  }
+  .req-summary{
+    display:grid;
+    grid-template-columns:1fr 130px 90px 20px;
+    align-items:center;
+    gap:18px;
+    padding:18px 0;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .req-name-wrap{display:flex; flex-direction:column; gap:6px;}
+  .req-name{font-size:1rem; font-weight:500;}
+  .req-status{
+    font-size:0.76rem;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    width:fit-content;
+    padding:2px 8px 2px 6px;
+    border-radius:20px;
+  }
+  .req-status.complete{background:var(--forest-bg); color:var(--forest);}
+  .req-status.progress{background:var(--rust-bg); color:var(--rust);}
+  .req-status.pending{background:var(--slate-bg); color:var(--slate);}
+  .req-status .dotmark{width:6px; height:6px; border-radius:50%; background:currentColor; display:inline-block;}
+
+  .req-bar-wrap{display:flex; flex-direction:column; gap:6px;}
+  .req-bar-track{
+    height:6px;
+    background:var(--slate-bg);
+    border-radius:2px;
+    overflow:hidden;
+    display:flex;
+  }
+  .req-bar-earned{background:var(--brass-fill); height:100%;}
+  .req-bar-current{background:var(--rust); height:100%; opacity:0.55;}
+  .req-bar-label{
+    font-size:0.76rem;
+    color:var(--muted);
+    font-variant-numeric:tabular-nums;
+  }
+
+  .req-remaining{
+    font-variant-numeric:tabular-nums;
+    font-size:0.9rem;
+    text-align:right;
+  }
+  .req-remaining .num{font-weight:600;}
+  .req-remaining .unit{color:var(--muted); font-size:0.74rem; display:block;}
+
+  .chev{
+    width:9px; height:9px;
+    border-right:1.5px solid var(--muted);
+    border-bottom:1.5px solid var(--muted);
+    transform:rotate(45deg);
+    transition:transform .2s ease;
+    justify-self:end;
+  }
+  .req-row.open .chev{transform:rotate(-135deg);}
+
+  .req-detail{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .28s ease;
+  }
+  .req-row.open .req-detail{
+    max-height:2000px;
+  }
+  .req-detail-inner{
+    padding:4px 0 26px;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:28px;
+  }
+  @media (max-width:720px){
+    .req-detail-inner{grid-template-columns:1fr;}
+    .req-summary{grid-template-columns:1fr 90px 20px;}
+    .req-bar-wrap{display:none;}
+  }
+
+  .detail-col-title{
+    font-size:0.72rem;
+    color:var(--muted);
+    margin:0 0 10px;
+    padding-bottom:6px;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .detail-course{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    padding:6px 0;
+    font-size:0.85rem;
+  }
+  .detail-course .dc-title{color:var(--ink-soft); flex:1;}
+  .detail-course .dc-code{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    color:var(--muted);
+    display:block;
+  }
+  .detail-course .dc-right{
+    font-variant-numeric:tabular-nums;
+    color:var(--muted);
+    white-space:nowrap;
+    font-size:0.78rem;
+  }
+  .grade-pill{
+    display:inline-block;
+    min-width:16px;
+    text-align:center;
+    font-size:0.72rem;
+    font-weight:600;
+    color:var(--forest);
+    margin-left:6px;
+  }
+  .grade-pill.pending{color:var(--rust); font-weight:500; font-size:0.68rem;}
+  .faculty{display:block; font-size:0.78rem; color:var(--muted); margin-top:2px;}
+  .empty-note{color:var(--muted); font-size:0.82rem; font-style:italic;}
+  .pool-note{
+    font-size:0.78rem;
+    color:var(--muted);
+    margin-top:10px;
+    padding-top:8px;
+    border-top:1px dashed var(--line);
+  }
+
+  /* ---------- Grades summary ---------- */
+  .grade-grid{
+    display:grid;
+    grid-template-columns:repeat(8, 1fr);
+    border-top:1px solid var(--ink);
+    border-left:1px solid var(--line-soft);
+  }
+  .grade-cell{
+    border-right:1px solid var(--line-soft);
+    border-bottom:1px solid var(--line-soft);
+    padding:18px 10px;
+    text-align:center;
+  }
+  .grade-cell .g-letter{
+    font-family:'Fraunces', serif;
+    font-size:1.4rem;
+    font-weight:500;
+  }
+  .grade-cell .g-count{
+    font-size:0.78rem;
+    color:var(--muted);
+    margin-top:2px;
+  }
+  @media (max-width:720px){
+    .grade-grid{grid-template-columns:repeat(4,1fr);}
+  }
+
+  footer{
+    margin-top:64px;
+    padding-top:22px;
+    border-top:1px solid var(--line);
+    color:var(--muted);
+    font-size:0.78rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="masthead">
+    <div class="masthead-top">
+      <div>
+        <p class="student-name">Shashi Singh</p>
+        <p class="student-meta">B.Tech · Computer Science &amp; Engineering (AI &amp; ML)<span class="dot">·</span>24BAI10686<span class="dot">·</span>SCAI, VIT Bhopal</p>
+      </div>
+      <div class="cgpa-box">
+        <div class="cgpa-num">9.10</div>
+        <div class="cgpa-label">CGPA · 87 credits graded</div>
+      </div>
+    </div>
+
+    <div class="progress-hero">
+      <div class="progress-fraction" id="heroFraction"></div>
+      <div class="progress-caption">credits completed toward the <strong>169</strong> required for the degree. <span id="pendingNote"></span></div>
+    </div>
+
+    <div class="bar-track" id="heroBar"></div>
+    <div class="bar-legend">
+      <span><i class="swatch" style="background:var(--brass-fill)"></i>Earned</span>
+      <span><i class="swatch" style="background:var(--rust); opacity:.55"></i>Registered this term</span>
+      <span><i class="swatch" style="background:var(--slate-bg)"></i>Remaining</span>
+    </div>
+  </div>
+
+  <!-- Current semester -->
+  <div class="section">
+    <div class="section-head">
+      <h2 class="section-title">Registered this term</h2>
+      <p class="section-sub" id="termSub"></p>
+    </div>
+    <div class="term-table">
+      <div class="term-row-head">
+        <span>Code</span><span>Course</span><span></span><span>Cr.</span>
+      </div>
+      <div id="termRows"></div>
+      <div class="term-total">Total registered <strong id="termTotal"></strong></div>
+    </div>
+  </div>
+
+  <!-- Requirement ledger -->
+  <div class="section">
+    <div class="section-head">
+      <h2 class="section-title">Degree progress by requirement</h2>
+      <p class="section-sub">Tap a row to see completed, registered and remaining courses.</p>
+    </div>
+    <div class="req-list" id="reqList"></div>
+  </div>
+
+  <!-- Grades -->
+  <div class="section">
+    <div class="section-head">
+      <h2 class="section-title">Grade distribution</h2>
+      <p class="section-sub">Grades on file only — results for last term are awaited.</p>
+    </div>
+    <div class="grade-grid" id="gradeGrid"></div>
+  </div>
+
+  <footer>
+    Built from the VTOP provisional grade history, curriculum report and current-term registration for 24BAI10686. Last term's courses are marked completed with grades awaited and are not yet in the CGPA. Figures reflect results on file as of 11&nbsp;Nov&nbsp;2026 and are unofficial — verify against VTOP for anything that matters.
+  </footer>
+
+</div>
+
+<script>
+/* ---------------------------------------------------------------
+   DATA
+   status: "completed" | "current" | "remaining"
+   mode:   "mandatory" (every catalog course is required)
+           "elective"  (pick courses from the pool to reach the credit target)
+----------------------------------------------------------------*/
+
+const categories = [
+  {
+    key: "PC", name: "Programme Core", required: 55, mode: "mandatory",
+    courses: [
+      {code:"CSA2003", title:"Digital Logic and Computer Architecture", credits:4.0, status:"remaining"},
+      {code:"CSA3006", title:"Data Mining and Data Warehousing", credits:4.0, status:"current", faculty:"Abha Sharma"},
+      {code:"CSA3007", title:"Deep Learning", credits:4.0, status:"current", faculty:"Gunjan Ansari"},
+      {code:"CSA4002", title:"Artificial Neural Networks", credits:4.0, status:"current", faculty:"Vijay Kumar Trivedi"},
+      {code:"CSA4008", title:"Applied Machine Learning", credits:4.0, status:"current", faculty:"Priscilla Dinkar Moyya"},
+      {code:"CSA4028", title:"Natural Language Processing", credits:4.0, status:"current", faculty:"Vipin Jain"},
+      {code:"CSA4029", title:"Reinforcement and Representation Learning", credits:4.0, status:"remaining"},
+      {code:"CSD3009", title:"Data Structures and Analysis of Algorithms", credits:4.0, status:"completed", grade:"A"},
+      {code:"CSE2001", title:"Object Oriented Programming with C++", credits:4.0, status:"completed", grade:"C"},
+      {code:"CSE2004", title:"Theory of Computation and Compiler Design", credits:4.0, status:"completed", grade:"B"},
+      {code:"CSE3001", title:"Database Management Systems", credits:4.0, status:"completed", pending:true},
+      {code:"CSE3003", title:"Operating System", credits:4.0, status:"completed", grade:"A"},
+      {code:"CSE3006", title:"Computer Networks", credits:4.0, status:"completed", pending:true},
+      {code:"CSE3011", title:"Python Programming", credits:3.0, status:"completed", grade:"A"},
+    ]
+  },
+  {
+    key: "PE", name: "Programme Elective", required: 15, mode: "elective",
+    courses: [
+      {code:"CSA3001", title:"Agent Based Intelligent Systems", credits:3.0, status:"remaining"},
+      {code:"CSA3004", title:"Data Visualization", credits:3.0, status:"remaining"},
+      {code:"CSA3010", title:"AI in Industry 4.0", credits:3.0, status:"remaining"},
+      {code:"CSA3011", title:"Bayesian Data Analysis", credits:3.0, status:"remaining"},
+      {code:"CSA3012", title:"Immersive Multimedia", credits:3.0, status:"remaining"},
+      {code:"CSA3013", title:"Surveillance Video Analytics and Image Processing", credits:3.0, status:"remaining"},
+      {code:"CSA3015", title:"R Programming", credits:3.0, status:"remaining"},
+      {code:"CSA3017", title:"Knowledge Engineering", credits:3.0, status:"remaining"},
+      {code:"CSA3018", title:"Computer Vision for Autonomous Vehicles", credits:3.0, status:"remaining"},
+      {code:"CSA3019", title:"Pervasive AI for IoT Applications", credits:3.0, status:"remaining"},
+      {code:"CSA3020", title:"Generative AI", credits:3.0, status:"completed", grade:"A"},
+      {code:"CSA3021", title:"Drone Technology", credits:3.0, status:"remaining"},
+      {code:"CSA4005", title:"Expert Systems and Fuzzy Logic", credits:3.0, status:"remaining"},
+      {code:"CSA4007", title:"Cognitive Analytics", credits:3.0, status:"remaining"},
+      {code:"CSA4010", title:"Data Analytics Using Scala Programming", credits:3.0, status:"remaining"},
+      {code:"CSA4011", title:"Information Retrieval and Web Search", credits:3.0, status:"remaining"},
+      {code:"CSA4012", title:"Introduction to Brain and Neuro Science", credits:3.0, status:"remaining"},
+      {code:"CSA4015", title:"Computational Intelligence", credits:3.0, status:"remaining"},
+      {code:"CSA4016", title:"Hardware Architecture for Machine Learning", credits:3.0, status:"remaining"},
+      {code:"CSA4019", title:"Machine Learning with Big Data", credits:3.0, status:"remaining"},
+      {code:"CSA4021", title:"Graph Analytics for Big Data", credits:3.0, status:"remaining"},
+      {code:"CSA4022", title:"Parallel and Distributed Systems", credits:3.0, status:"remaining"},
+      {code:"CSA4023", title:"Speech System", credits:3.0, status:"remaining"},
+      {code:"CSA4024", title:"Theoretical and Computational Neuroscience", credits:3.0, status:"remaining"},
+      {code:"CSA4030", title:"Predictive and Time Series Analysis", credits:3.0, status:"remaining"},
+      {code:"CSE3010", title:"Computer Vision", credits:3.0, status:"completed", pending:true},
+      {code:"CSE3015", title:"AWS Cloud Practitioner", credits:4.0, status:"completed", pending:true},
+      {code:"CSE3016", title:"AWS Solution Architect", credits:4.0, status:"remaining"},
+      {code:"CSE3017", title:"Salesforce", credits:4.0, status:"remaining"},
+      {code:"ONS3022", title:"Internet of Things and its Applications", credits:4.0, status:"remaining"},
+    ]
+  },
+  {
+    key: "UCNSC", name: "University Core — Natural Science Core", required: 23, mode: "mandatory",
+    courses: [
+      {code:"CHY1005", title:"Introduction to Computational Chemistry", credits:4.0, status:"completed", grade:"S"},
+      {code:"MAT1003", title:"Calculus", credits:4.0, status:"completed", grade:"A"},
+      {code:"MAT2002", title:"Discrete Mathematics and Graph Theory", credits:4.0, status:"completed", grade:"S"},
+      {code:"MAT3002", title:"Applied Linear Algebra", credits:3.0, status:"completed", grade:"A"},
+      {code:"MAT3003", title:"Probability, Statistics and Reliability", credits:4.0, status:"completed", pending:true},
+      {code:"PHY1003", title:"Introduction to Computational Physics", credits:4.0, status:"completed", grade:"S"},
+    ]
+  },
+  {
+    key: "UCBESC", name: "University Core — Basic Engineering Sciences Core", required: 12, mode: "mandatory",
+    courses: [
+      {code:"CSA2001", title:"Fundamentals in AI & ML", credits:4.0, status:"completed", grade:"A"},
+      {code:"EEE1001", title:"Electric Circuits and Systems", credits:4.0, status:"completed", grade:"A"},
+      {code:"MEE2014", title:"Engineering Design and Modelling", credits:4.0, status:"completed", grade:"A"},
+    ]
+  },
+  {
+    key: "UCSDC", name: "University Core — Skill Development Courses", required: 14, mode: "mandatory",
+    courses: [
+      {code:"CSE1021", title:"Introduction to Problem Solving and Programming", credits:4.0, status:"completed", grade:"S"},
+      {code:"CSE2006", title:"Programming in Java", credits:3.0, status:"completed", grade:"A"},
+      {code:"PLA1004", title:"Competitive Coding Practices", credits:3.0, status:"completed", grade:"A"},
+      {code:"PLA1006", title:"Lateral Thinking", credits:2.0, status:"current", faculty:"PAT Trainer"},
+      {code:"SST1003", title:"Professional Communication Skills for Engineers", credits:1.0, status:"completed", grade:"S"},
+      {code:"SST2003", title:"Dynamics of Workplace Communication Skills", credits:1.0, status:"completed", pending:true},
+    ]
+  },
+  {
+    key: "UCHSSMC", name: "University Core — Humanities, Social Science & Management Core", required: 6, mode: "mandatory",
+    courses: [
+      {code:"CHY1006", title:"Environmental Sustainability", credits:2.0, status:"completed", grade:"A"},
+      {code:"ENG1004", title:"Effective Technical Communication", credits:2.0, status:"completed", grade:"S"},
+      {code:"ENG2005", title:"Advanced Technical Communication", credits:2.0, status:"completed", grade:"A"},
+    ]
+  },
+  {
+    key: "UCPI", name: "University Core — Project and Internships", required: 17, mode: "mandatory",
+    courses: [
+      {code:"DSN2092", title:"Summer Industrial Internship", credits:1.0, status:"remaining"},
+      {code:"DSN2093", title:"Semester Internship", credits:4.0, status:"remaining"},
+      {code:"DSN2098", title:"Project Exhibition — I", credits:1.0, status:"completed", grade:"S"},
+      {code:"DSN2099", title:"Project Exhibition — II", credits:1.0, status:"remaining"},
+      {code:"DSN3099", title:"Engineering Project in Community Service", credits:2.0, status:"completed", pending:true},
+      {code:"DSN4091", title:"Capstone Project — Phase 1", credits:3.0, status:"remaining"},
+      {code:"DSN4092", title:"Capstone Project — Phase 2", credits:5.0, status:"remaining"},
+    ]
+  },
+  {
+    key: "UENSE", name: "University Elective — Natural Science Electives", required: 6, mode: "elective",
+    courses: [
+      {code:"MAT2003", title:"Applied Numerical Method", credits:3.0, status:"current", faculty:"Anant Kumar Shukla"},
+      {code:"MAT2004", title:"Operations Research", credits:3.0, status:"remaining"},
+      {code:"MAT2005", title:"Transform Techniques and Difference Equations", credits:3.0, status:"completed", grade:"A"},
+      {code:"MAT3004", title:"Random Process", credits:3.0, status:"remaining"},
+      {code:"MAT3008", title:"Computational Game Theory", credits:3.0, status:"remaining"},
+      {code:"MAT3016", title:"Stochastic Process", credits:3.0, status:"remaining"},
+      {code:"MAT3017", title:"Statistical Inferences and Series of Functions", credits:3.0, status:"remaining"},
+    ]
+  },
+  {
+    key: "UEME", name: "University Elective — Multidisciplinary Electives", required: 3, mode: "elective",
+    courses: [
+      {code:"BIO1501", title:"Bio Inspired Design", credits:3.0, status:"remaining"},
+      {code:"CDS3005", title:"Foundations of Data Science", credits:3.0, status:"completed", grade:"A"},
+      {code:"CSD3010", title:"Cyber Physical Systems", credits:3.0, status:"remaining"},
+      {code:"CSE2003", title:"Computer Architecture and Organization", credits:4.0, status:"remaining"},
+      {code:"EAC4012", title:"Body Area Networks", credits:3.0, status:"remaining"},
+      {code:"ECE4006", title:"Sensors and IoT", credits:3.0, status:"remaining"},
+      {code:"ENG3001", title:"Introduction to Computational Linguistics", credits:3.0, status:"remaining"},
+      {code:"MEA3015", title:"Unmanned Aerial Vehicles", credits:3.0, status:"remaining"},
+    ]
+  },
+  {
+    key: "UEHSSME", name: "University Elective — Humanities, Social Sciences & Management Electives", required: 3, mode: "elective",
+    courses: [
+      {code:"BMT1013", title:"Human Resource Management", credits:3.0, status:"remaining"},
+      {code:"BMT2017", title:"International Business", credits:3.0, status:"remaining"},
+      {code:"HUM1002", title:"Emotional Intelligence", credits:3.0, status:"remaining"},
+      {code:"HUM2001", title:"Behavioural Science", credits:3.0, status:"remaining"},
+      {code:"MGT1002", title:"Principles of Management and Organizational Behaviour", credits:3.0, status:"remaining"},
+      {code:"MGT2003", title:"Technology Entrepreneurship", credits:3.0, status:"remaining"},
+    ]
+  },
+  {
+    key: "UEOE", name: "University Elective — Open Electives", required: 6, mode: "elective",
+    courses: [
+      {code:"CHY1001", title:"Engineering Chemistry", credits:4.0, status:"remaining"},
+      {code:"CHY1007", title:"Forensic Chemistry and Applications", credits:4.0, status:"remaining"},
+      {code:"CSD1001", title:"Principles of Digital Forensics", credits:3.0, status:"remaining"},
+      {code:"CSD4002", title:"Ethical Hacking", credits:4.0, status:"remaining"},
+      {code:"CSE3007", title:"Artificial Intelligence", credits:3.0, status:"remaining"},
+      {code:"ECE2002", title:"Digital Logic Design", credits:4.0, status:"remaining"},
+      {code:"HUM2003", title:"Foundations of Privacy and Security", credits:3.0, status:"remaining"},
+      {code:"MAT1031", title:"Introduction to Calculus", credits:4.0, status:"remaining"},
+      {code:"ONL1010", title:"Applied Machine Learning in Python", credits:4.0, status:"completed", pending:true},
+      {code:"ONL1021", title:"HTML, CSS and JavaScript for Web Developers", credits:3.0, status:"remaining"},
+      {code:"ONL1032", title:"IBM AI Engineering Professional Certificate", credits:4.0, status:"remaining"},
+      {code:"ONS3005", title:"Cloud Computing", credits:3.0, status:"completed", grade:"A"},
+      {code:"PHY1001", title:"Engineering Physics", credits:4.0, status:"remaining"},
+      {code:"PHY2011", title:"Biophysics", credits:3.0, status:"remaining"},
+    ]
+  },
+  {
+    key: "NMC", name: "Non-Graded Mandatory Courses", required: 9, mode: "mandatory-partial",
+    courses: [
+      {code:"CSE0001", title:"Digital Literacy", credits:1.0, status:"completed", grade:"P"},
+      {code:"CSE0002", title:"Open Source Software (Linux Administration)", credits:2.0, status:"completed", grade:"P"},
+      {code:"EXC0001", title:"Extra Curricular Activities", credits:0.0, status:"remaining"},
+      {code:"HUM0002", title:"Swachh Bharat", credits:1.0, status:"completed", grade:"P"},
+      {code:"HUM0003", title:"Indian Constitution", credits:2.0, status:"completed", grade:"P"},
+      {code:"HUM0004", title:"Indian Heritage", credits:2.0, status:"remaining"},
+      {code:"UHV0001", title:"Universal Human Values — I", credits:0.0, status:"completed", grade:"P"},
+      {code:"UHV0002", title:"Universal Human Values — II", credits:3.0, status:"completed", grade:"P"},
+    ]
+  },
+];
+
+// ---------------------------------------------------------------
+// Derived numbers
+const sum = (arr) => arr.reduce((a,c)=>a+c.credits, 0);
+
+categories.forEach(cat => {
+  cat.completedCourses = cat.courses.filter(c=>c.status==="completed");
+  cat.currentCourses   = cat.courses.filter(c=>c.status==="current");
+  cat.remainingCourses = cat.courses.filter(c=>c.status==="remaining");
+  cat.earned  = sum(cat.completedCourses);
+  cat.current = sum(cat.currentCourses);
+  const need  = Math.max(cat.required - cat.earned - cat.current, 0);
+  cat.stillNeeded = Math.round(need*10)/10;
+});
+
+const totalRequired = categories.reduce((a,c)=>a+c.required,0);
+const totalEarned   = categories.reduce((a,c)=>a+c.earned,0);
+const totalCurrent  = categories.reduce((a,c)=>a+c.current,0);
+
+// ---------------------------------------------------------------
+// Render: hero bar
+document.getElementById("heroFraction").innerHTML = `${totalEarned}<small>&nbsp;/&nbsp;${totalRequired}</small>`;
+const pendingCourses = [];
+categories.forEach(cat => cat.completedCourses.forEach(c => { if(c.pending) pendingCourses.push(c); }));
+document.getElementById("pendingNote").textContent = pendingCourses.length ? `${sum(pendingCourses)} of these are awaiting grades.` : "";
+const heroBar = document.getElementById("heroBar");
+const pctEarned = (totalEarned/totalRequired)*100;
+const pctCurrent = (totalCurrent/totalRequired)*100;
+heroBar.innerHTML = `<div class="bar-earned" style="width:${pctEarned}%"></div><div class="bar-current" style="width:${pctCurrent}%"></div>`;
+
+// ---------------------------------------------------------------
+// Render: current term
+const currentTermCourses = [];
+categories.forEach(cat => cat.currentCourses.forEach(c => currentTermCourses.push({...c, catName: cat.name})));
+document.getElementById("termSub").textContent = `${currentTermCourses.length} courses · ${sum(currentTermCourses)} credits registered`;
+document.getElementById("termTotal").textContent = `${sum(currentTermCourses)} credits`;
+
+const termRows = document.getElementById("termRows");
+currentTermCourses.forEach(c => {
+  const row = document.createElement("div");
+  row.className = "term-row";
+  row.innerHTML = `
+    <span class="code">${c.code}</span>
+    <span class="course-title">${c.title}${c.faculty ? `<span class="faculty">${c.faculty}</span>` : ""}</span>
+    <span class="course-cat">${c.catName}</span>
+    <span class="course-credits">${c.credits.toFixed(1)}</span>
+  `;
+  termRows.appendChild(row);
+});
+
+// ---------------------------------------------------------------
+// Render: requirement ledger
+const reqList = document.getElementById("reqList");
+
+function courseListHTML(list, showGrade){
+  if(!list.length) return `<p class="empty-note">None yet.</p>`;
+  return list.map(c => `
+    <div class="detail-course">
+      <span class="dc-title"><span class="dc-code">${c.code}</span>${c.title}</span>
+      <span class="dc-right">${c.credits.toFixed(1)}${showGrade && c.grade ? `<span class="grade-pill">${c.grade}</span>` : (showGrade && c.pending ? `<span class="grade-pill pending">Grade awaited</span>` : "")}</span>
+    </div>
+  `).join("");
+}
+
+categories.forEach(cat => {
+  const status = cat.stillNeeded <= 0 ? "complete" : (cat.current > 0 ? "progress" : "pending");
+  const statusLabel = status === "complete" ? "Complete" : (status === "progress" ? "In progress" : "Not started");
+
+  const row = document.createElement("div");
+  row.className = "req-row";
+
+  const pctE = Math.min((cat.earned/cat.required)*100,100);
+  const pctC = Math.min((cat.current/cat.required)*100, 100-pctE);
+
+  const remainingLabel = cat.stillNeeded > 0
+    ? `<span class="num">${cat.stillNeeded}</span><span class="unit">credits left</span>`
+    : `<span class="num">—</span><span class="unit">done</span>`;
+
+  const poolNote = cat.mode === "elective"
+    ? `<p class="pool-note">Elective pool — pick any combination worth ${cat.required} credits. ${cat.stillNeeded > 0 ? `${cat.remainingCourses.length} options remain to choose from.` : "Requirement met; extra options below are optional."}</p>`
+    : (cat.mode === "mandatory-partial"
+        ? `<p class="pool-note">Only ${cat.required} of the ${sum(cat.courses)} available credits are required — the rest below are optional.</p>`
+        : "");
+
+  row.innerHTML = `
+    <div class="req-summary">
+      <div class="req-name-wrap">
+        <span class="req-name">${cat.name}</span>
+        <span class="req-status ${status}"><span class="dotmark"></span>${statusLabel} · ${cat.earned + cat.current}/${cat.required} cr</span>
+      </div>
+      <div class="req-bar-wrap">
+        <div class="req-bar-track"><div class="req-bar-earned" style="width:${pctE}%"></div><div class="req-bar-current" style="width:${pctC}%"></div></div>
+        <span class="req-bar-label">${cat.earned} earned${cat.current ? ` · ${cat.current} registered` : ""}</span>
+      </div>
+      <div class="req-remaining">${remainingLabel}</div>
+      <div class="chev"></div>
+    </div>
+    <div class="req-detail">
+      <div class="req-detail-inner">
+        <div>
+          <p class="detail-col-title">Completed</p>
+          ${courseListHTML(cat.completedCourses, true)}
+        </div>
+        <div>
+          <p class="detail-col-title">Registered this term</p>
+          ${courseListHTML(cat.currentCourses, false)}
+        </div>
+        <div>
+          <p class="detail-col-title">${cat.mode === "elective" ? "Remaining options" : "Still to take"}</p>
+          ${courseListHTML(cat.remainingCourses, false)}
+        </div>
+      </div>
+      ${poolNote}
+    </div>
+  `;
+
+  row.querySelector(".req-summary").addEventListener("click", () => {
+    row.classList.toggle("open");
+  });
+
+  reqList.appendChild(row);
+});
+
+// ---------------------------------------------------------------
+// Render: grade distribution
+const gradeCounts = {};
+categories.forEach(cat => cat.completedCourses.forEach(c => {
+  if(!c.grade) return;
+  gradeCounts[c.grade] = (gradeCounts[c.grade]||0)+1;
+}));
+const gradeOrder = ["S","A","B","C","D","E","F","P"];
+const gradeGrid = document.getElementById("gradeGrid");
+gradeOrder.forEach(g => {
+  const cell = document.createElement("div");
+  cell.className = "grade-cell";
+  cell.innerHTML = `<div class="g-letter">${g}</div><div class="g-count">${gradeCounts[g]||0}</div>`;
+  gradeGrid.appendChild(cell);
+});
+
+</script>
+</body>
+</html>
